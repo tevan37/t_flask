@@ -8,6 +8,7 @@ from flaskr.db import get_db
 
 bp = Blueprint('blog', __name__)
 
+
 @bp.route('/')
 def index():
     db = get_db()
@@ -27,7 +28,7 @@ def create():
         error = None
 
         if not title:
-            error = 'Title is required.'
+            error = 'Se requiere título.'
 
         if error is not None:
             flash(error)
@@ -94,4 +95,3 @@ def delete(id):
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))
-

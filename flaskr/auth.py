@@ -14,23 +14,27 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        verify_password = request.form['verify_password']
         db = get_db()
         error = None
-
+        
         if not username:
-            error = 'Username is required.'
+            error = 'Se requiere el nombre de Usuario.'
         elif not password:
-            error = 'Password is required.'
+            error = 'Se requiere la Contraseña.'
+        elif verify_password != password:
+            error = 'Contraseña no coincide.'
+        
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    "INSERT INTO user (username, password, verify_password) VALUES (?, ?, ?)",
+                    (username, generate_password_hash(password),generate_password_hash(verify_password)),
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                error = f"El usuario '{username}' se encuentra registrado."
             else:
                 return redirect(url_for("auth.login"))
 
@@ -50,9 +54,9 @@ def login():
         ).fetchone()
 
         if user is None:
-            error = 'Incorrect username.'
+            error = 'Nombre de Usuario no encontrado.'
         elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+            error = 'Contraseña Incorrecta.'
 
         if error is None:
             session.clear()

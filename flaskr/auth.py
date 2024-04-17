@@ -15,6 +15,7 @@ def register():
         username = request.form['username']
         password = request.form['password']
         verify_password = request.form['verify_password']
+        email = request.form['email']
         db = get_db()
         error = None
         
@@ -24,13 +25,15 @@ def register():
             error = 'Se requiere la Contraseña.'
         elif verify_password != password:
             error = 'Contraseña no coincide.'
+        elif not email:
+            error = 'Se requiere un Correo electrónico'
         
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password, verify_password) VALUES (?, ?, ?)",
-                    (username, generate_password_hash(password),generate_password_hash(verify_password)),
+                    "INSERT INTO user (email, username, password, verify_password) VALUES (?, ?, ?, ?)",
+                    (email, username, generate_password_hash(password),generate_password_hash(verify_password)),
                 )
                 db.commit()
             except db.IntegrityError:
@@ -45,15 +48,15 @@ def register():
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         db = get_db()
         error = None
         user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (username,)
+            'SELECT * FROM user WHERE email = ?', (email,)
         ).fetchone()
 
-        if user is None:
+        if email is None:
             error = 'Nombre de Usuario no encontrado.'
         elif not check_password_hash(user['password'], password):
             error = 'Contraseña Incorrecta.'

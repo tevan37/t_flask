@@ -71,7 +71,7 @@ def update(id):
         error = None
 
         if not title:
-            error = 'Title is required.'
+            error = 'Se requiere Título.'
 
         if error is not None:
             flash(error)

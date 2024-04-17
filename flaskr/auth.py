@@ -57,7 +57,7 @@ def login():
         ).fetchone()
 
         if email is None:
-            error = 'Nombre de Usuario no encontrado.'
+            error = 'Correo electrónico no encontrado.'
         elif not check_password_hash(user['password'], password):
             error = 'Contraseña Incorrecta.'
 
